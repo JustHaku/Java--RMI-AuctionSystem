@@ -13,23 +13,18 @@ public class challenge implements Serializable{
 	private File challengeBytes = null;
 	private static final long serialVersionUID = 1L;
 	
-	public challenge(String fn)
-	{	
+	public challenge(String fn){
 		path = fn;
 		
-		try
-		{
+		try{
 			challengeBytes = new File(path);
 		}
-		catch(Exception e)
-		{
+		catch(Exception e){
 			System.out.println("Could not read the file at the given path");
 		}
 	}
 	
-	public File getChallengeFile()
-	{
+	public File getChallengeFile(){
 		return challengeBytes;
 	}
-		
 }

@@ -7,25 +7,19 @@ import java.io.*;
 /  to a local port and starts the server
 */ 
 
-public class auctionServer 
-{
-   public auctionServer() 
-   {
-	try 
-	{
+public class auctionServer{
+   public auctionServer(){
+	try{
 		auctionInterface a = new auctionImplementation("signMeUser.txt");
 		Naming.rebind("rmi://localhost/Auctions", a);
 	} 
-	catch (Exception e) 
-	{
+	catch (Exception e){
 		System.out.println("Server Error: " + e);
 	}
    }
    
-   public static void main(String args[]) 
-   {
+   public static void main(String args[]){
 		//Create the new auctionServer
 		new auctionServer();
    }
-   
 }

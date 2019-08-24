@@ -9,4 +9,17 @@ The system also supports multiple seller and buyer clients creating listings or 
 Bid Clients are used to buy items from sellers in the auction system.
 Sell Clients are used to list items to be sold in the auction system.
 
-To launch the system, the auction server should be ran first.
+To launch the auction system, run the following commands:
+
+>javac *.java
+>rmiregistry
+>java auctionServer
+
+
+To create a Sell Client, run the following commands after the auction system is running:
+
+>java SellClient 
+
+To create a Bid Client, run the following commands after the auction system is running:
+
+>java BidClient

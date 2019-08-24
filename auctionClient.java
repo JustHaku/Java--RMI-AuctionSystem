@@ -15,8 +15,7 @@ import java.security.spec.*;
 */
 
 
-public class auctionClient implements Serializable
-{
+public class auctionClient implements Serializable{
 	private static final AtomicInteger idCounter = new AtomicInteger(0); 
 	private static int userID;
 	private String name;
@@ -43,193 +42,164 @@ public class auctionClient implements Serializable
 	* @param  tEmail  the email of the user piloting the client
 	*/
 	
-	public auctionClient(String tName,String tEmail)
-	{
+	public auctionClient(String tName,String tEmail){
 		name = tName;
 		email = tEmail;
 		
-		try
-		{
+		try{
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-		
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
-			
 			keyGen.initialize(1024, random);
-			
 			KeyPair pair = keyGen.generateKeyPair();
-			
 			privKey = pair.getPrivate();
-			
 			pubKey = pair.getPublic();
 			
 		}
-		catch(Exception h)
-		{
+		catch(Exception h){
 			System.out.println("Could not generate a secure key pair");
 		}
 		
-		userID = idCounter.incrementAndGet(); 
-
+		userID = idCounter.incrementAndGet();
 	}
 
 	/**
 	* Gets the name of the clien 
 	* @return name of the client 
 	*/
-	public String getName()
-	{
+	public String getName(){
 		return name;
 	}
 	/**
 	* Returns the ID of the client
 	* @return userID ID of the client
 	*/	
-	public int getUserID()
-	{
+	public int getUserID(){
 		return userID;
 	}
 	/**
 	* Gets the current price of an item
 	* @return getItemBid item price
 	*/	
-	public double getItemBid()
-	{
+	public double getItemBid(){
 		return itemBid;
 	}
 	/**
 	* Gets the users email adress 
 	* @return email users email
 	*/	
-	public String getEmail()
-	{
+	public String getEmail(){
 		return email;
 	}
 	/**
 	* Holds the set of the users auctions
 	* @return hold set autions
 	*/	
-	public int[] getAuctions()
-	{
+	public int[] getAuctions(){
 		return hold;
 	}
 	/**
 	* Gets the initial (starting) price for the item
 	* @return startBid initial price
 	*/	
-	public double getStartPrice()
-	{
+	public double getStartPrice(){
 		return startBid;
 	}
 	/**
 	* gets the reserve price for an item
 	* @return minReserve reserve prince
 	*/	
-	public double getReservePrice()
-	{
+	public double getReservePrice(){
 		return minReserve;
 	}
 	/**
 	* Gets the description of the item in question
 	* @return desc desription of the item
 	*/	
-	public String getDescription()
-	{
+	public String getDescription(){
 		return desc;
 	}
 	/**
 	* Gets the ID for the action in question
 	* @return auctionID
 	*/	
-	public int getAuctionID()
-	{
+	public int getAuctionID(){
 		return auctionID;
 	}
 	/**
 	* 
 	* @return userResponse
 	*/	
-	public response getResponse()
-	{
+	public response getResponse(){
 		return userResponse;
 	}
 	/**
 	* 
 	* @return pubKey
 	*/	
-	public PublicKey getPublicKey()
-	{
+	public PublicKey getPublicKey(){
 		return pubKey;
 	}
 	/**
 	* 
 	* @return userChallenge
 	*/	
-	public challenge getChallenge()
-	{
+	public challenge getChallenge(){
 		return userChallenge;
 	}
 	/**
 	* 
 	* @param bid
 	*/	
-	public void setStartPrice(double bid)
-	{
+	public void setStartPrice(double bid){
 		startBid = bid;
 	}
 	/**
 	*
 	* @param  aucBid
 	*/
-	public void setItemBid(double aucBid)
-	{
+	public void setItemBid(double aucBid){
 		itemBid = aucBid;
 	}
 	/**
 	*
 	* @param  aucID
 	*/
-	public void setAuctionID(int aucID)
-	{
+	public void setAuctionID(int aucID){
 		auctionID = aucID;
 	}
 	/**
 	*
 	* @param  reserveBid
 	*/	
-	public void setReservePrice(double reserveBid)
-	{
+	public void setReservePrice(double reserveBid){
 		minReserve = reserveBid;
 	}
 	/**
 	*
 	* @param  decription
 	*/	
-	public void setDescription(String decription)
-	{
+	public void setDescription(String decription){
 		desc = decription;
 	}
 	/**
 	*
 	* @param  newName
 	*/	
-	public void setName(String newName)
-	{
+	public void setName(String newName){
 		name = newName;
 	}
 	/**
 	*
 	* @param  newEmail
 	*/
-	public void setEmail(String newEmail)
-	{
+	public void setEmail(String newEmail){
 		email = newEmail;
 	}	
 	/**
 	*
 	* @param  auctID
 	*/
-	public void setAuctions(int auctID)
-	{
+	public void setAuctions(int auctID){
 		hold[counter] = auctID;
 		counter++;
 	}
@@ -237,8 +207,7 @@ public class auctionClient implements Serializable
 	*
 	* @param  path
 	*/	
-	public void requestChallenge(String path)
-	{
+	public void requestChallenge(String path){
 		userChallenge = new challenge(path);
 	}
 	
@@ -246,33 +215,24 @@ public class auctionClient implements Serializable
 	* Generates a signature for a requested challenge
 	* 
 	*/	
-	public void genSig(auctionInterface a) throws java.rmi.RemoteException
-	{
-		try
-		{
+	public void genSig(auctionInterface a) throws java.rmi.RemoteException{
+		try{
 			File challenge = (a.getChallenge()).getChallengeFile();
-			
-			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN"); 
-			
+			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
 			dsa.initSign(privKey);
-			
 			FileInputStream fis = new FileInputStream(challenge);
 			BufferedInputStream bufin = new BufferedInputStream(fis);
 			byte[] buffer = new byte[1024];
 			int len;
-			while ((len = bufin.read(buffer)) >= 0) {
+			while ((len = bufin.read(buffer)) >= 0){
 				dsa.update(buffer, 0, len);
 			};
+
 			bufin.close();
-			
 			byte[] realSig = dsa.sign();
-
 			userResponse = new response(realSig);
-
 		}
-		
-		catch(Exception e)
-		{
+		catch(Exception e){
 			System.out.println("Could not respond to the challenge");
 		}	
 	}
@@ -281,12 +241,10 @@ public class auctionClient implements Serializable
 	* verifies the signature of a file by another object
 	* @returns boolean verifies
 	*/	
-	public boolean verSig(auctionInterface a)
-	{
+	public boolean verSig(auctionInterface a){
 		boolean verifies = false;
 		
-		try
-		{
+		try{
 			//Writes the server signed file onto local area of client
 			byte[] serverResponse = ((a.getResponse()).getResponseFile());
 			FileOutputStream responsefos = new FileOutputStream("serverResponse");
@@ -329,22 +287,19 @@ public class auctionClient implements Serializable
             byte[] buffer = new byte[1024];
             int len;
 			
-            while (bufin.available() != 0) {
+            while (bufin.available() != 0){
                 len = bufin.read(buffer);
                 sig.update(buffer, 0, len);
-                };
+            };
  
             bufin.close();
  
             verifies = sig.verify(sigToVerify);	
 		}
-		catch(Exception e)
-		{
+		catch(Exception e){
 			
 		}
 		
 		return verifies;
 	}
-	
-	
 }

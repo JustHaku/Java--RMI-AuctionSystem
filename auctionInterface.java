@@ -16,8 +16,7 @@ import javax.crypto.spec.*;
 /  also contains method to display a user's auctions 
 */
 
-public interface auctionInterface extends java.rmi.Remote  
-{	
+public interface auctionInterface extends java.rmi.Remote{
     public int createAuction(auctionClient seller) throws java.rmi.RemoteException;
 
     public void endAuction(auctionClient seller) throws java.rmi.RemoteException;

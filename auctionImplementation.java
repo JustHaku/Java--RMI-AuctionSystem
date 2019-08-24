@@ -16,8 +16,7 @@ import java.security.spec.*;
 /  provides methods to complete each task
 */
 
-public class auctionImplementation extends java.rmi.server.UnicastRemoteObject implements auctionInterface 
-{
+public class auctionImplementation extends java.rmi.server.UnicastRemoteObject implements auctionInterface{
 	private int counter = 0;
 	private List<auction> auctions = new ArrayList<auction>();
 	private List<auctionClient> users = new ArrayList<auctionClient>();
@@ -27,29 +26,19 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	response serverResponse;
    
 	
-    public auctionImplementation(String challengePath) throws java.rmi.RemoteException 
-	{
+    public auctionImplementation(String challengePath) throws java.rmi.RemoteException{
         super();
 		
-		try
-		{
+		try{
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
-			
 			keyGen.initialize(1024, random);
-			
 			KeyPair pair = keyGen.generateKeyPair();
-			
 			privKey = pair.getPrivate();
-			
 			pubKey = pair.getPublic();
-
 			serverChallenge = new challenge(challengePath);
-			
 		}
-		catch(Exception h)
-		{
+		catch(Exception h){
 			System.out.println("Could not generate a secure key pair");
 		}	 
     }
@@ -65,10 +54,8 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	*
 	*@return returns the id of the new auction
 	*/
-    public int createAuction(auctionClient seller) throws java.rmi.RemoteException
-	{
+    public int createAuction(auctionClient seller) throws java.rmi.RemoteException{
 		auctions.add(new auction(seller,seller.getStartPrice(),seller.getDescription(),seller.getReservePrice()));
-		
 		auctions.get(counter).setActive();
 		auctions.get(counter).setID(counter);
 		
@@ -92,36 +79,29 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	*@params auctionID the id for the auction being closed
 	*
 	*/
-    public void endAuction(auctionClient seller) throws java.rmi.RemoteException	
-	{
+    public void endAuction(auctionClient seller) throws java.rmi.RemoteException{
 		int len = auctions.size();
 		String output = "none";
 		
-		for(int i=0; i<len; i++) 
-		{
-			if (auctions.get(i).getOwnerName().equals(seller.getName())) 
-			{
-				if(auctions.get(i).getID() == seller.getAuctionID() && auctions.get(i).getActive() == true) 
-				{
+		for(int i=0; i<len; i++){
+			if (auctions.get(i).getOwnerName().equals(seller.getName())){
+				if(auctions.get(i).getID() == seller.getAuctionID() && auctions.get(i).getActive() == true){
 					auctions.get(i).setInactive();
 					
 					System.out.println("--------------------------------------------");
 					System.out.println("Auction " + auctions.get(i).getID() + " was successfully closed");
 					System.out.println("--------------------------------------------\n");
 					
-					if(auctions.get(i).metStartPrice() > 0 && seller.getEmail() != auctions.get(i).getOwnerEmail())
-					{
+					if(auctions.get(i).metStartPrice() > 0 && seller.getEmail() != auctions.get(i).getOwnerEmail()){
 						output = ("The auction was won by " + auctions.get(i).getHighestBidderName() + " with the winning bid of " +"\u00A3"+ auctions.get(i).getCurrentPrice());
 					}
-					else
-					{
+					else{
 						output = ("The reserve price of "+"\u00A3" + auctions.get(i).getReservePrice() + " was not met, the auction is now closed");
 					}		
 					break;
 				}
 			}
-			else
-			{
+			else{
 				output = "The auction could not be found using the ID provided"; 
 			}		
 		}	
@@ -140,14 +120,10 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	*@params bidPrice the intended bid price for the auction item
 	*
 	*/
-	public void auctionBid(auctionClient buyer) throws java.rmi.RemoteException
-	{	
-		if(auctions.isEmpty() == false)
-		{
-			if(auctions.get(buyer.getAuctionID()).getID() == buyer.getAuctionID() && auctions.get(buyer.getAuctionID()).getActive() == true)
-			{
-				if(buyer.getItemBid() > auctions.get(buyer.getAuctionID()).getCurrentPrice())
-				{
+	public void auctionBid(auctionClient buyer) throws java.rmi.RemoteException{
+		if(auctions.isEmpty() == false){
+			if(auctions.get(buyer.getAuctionID()).getID() == buyer.getAuctionID() && auctions.get(buyer.getAuctionID()).getActive() == true){
+				if(buyer.getItemBid() > auctions.get(buyer.getAuctionID()).getCurrentPrice()){
 					System.out.println("--------------------------------------------");
 					System.out.println("The highest bid on auction " + buyer.getAuctionID() + " was: " +"\u00A3" + auctions.get(buyer.getAuctionID()).getCurrentPrice());
 					System.out.println("Your bid was successful on auction " + buyer.getAuctionID() + ",the current bid for the item is now: " + "\u00A3" + buyer.getItemBid() + " by " + buyer.getName());
@@ -159,8 +135,7 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 					buyer.setAuctions(buyer.getAuctionID());
 				}
 				
-				else
-				{
+				else{
 					System.out.println("--------------------------------------------");
 					System.out.println("The current highest bid is: " +"\u00A3"+ auctions.get(buyer.getAuctionID()).getCurrentPrice());
 					System.out.println("Your bid was too low, please try again and place a higher bid " + buyer.getName());
@@ -168,8 +143,7 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 				}
 			}
 		}	
-		else
-		{
+		else{
 			System.out.println("--------------------------------------------");
 			System.out.println("\nThere are no current auctions with the ID provided, please try again later");
 			System.out.println("--------------------------------------------\n");	
@@ -183,29 +157,24 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	*@params buyer the client whose auctions are being retrieved
 	*@return an integer array consisting of the auction indexes owned by the client
 	*/
-	public int [] userAuctionsDisplay(auctionClient buyer) throws java.rmi.RemoteException
-	{
+	public int [] userAuctionsDisplay(auctionClient buyer) throws java.rmi.RemoteException{
 		int [] hold = buyer.getAuctions();
-		
 		int counter = 0;
 		int len = auctions.size();
 	
-		for(int i=0; i<len; i++) 
-		{
-			if(auctions.isEmpty() == false)
-			{
-				if ((auctions.get(i).getHighestBidderName()).equals(buyer.getName()) && (auctions.get(i).getHighestBidderEmail()).equals(buyer.getEmail())) 
-				{
+		for(int i=0; i<len; i++){
+			if(auctions.isEmpty() == false){
+				if ((auctions.get(i).getHighestBidderName()).equals(buyer.getName()) && (auctions.get(i).getHighestBidderEmail()).equals(buyer.getEmail())){
 					hold[counter] = auctions.get(i).getID();
 					counter++;
 					
 				}					
 			}
-			else
-			{
+			else{
 				System.out.println("There were no auctions to retrieve");
 			}
 		}
+
 		return hold;
 	}
 	/**
@@ -213,34 +182,25 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	* @params user that is requested 
 	* @return userExists returns true if the user has been found 
 	*/
-	public boolean userCheck(auctionClient user) throws java.rmi.RemoteException
-    {
+	public boolean userCheck(auctionClient user) throws java.rmi.RemoteException{
 		boolean userExists = false;
 		
-		if(users.isEmpty() == true)
-		{
+		if(users.isEmpty() == true){
 			System.out.println("--------------------------------------------");
 			System.out.println("The first user has been registered in the database");
 			System.out.println("--------------------------------------------\n");
 			users.add(user);
 			userExists = true;
 		}
-
-		else
-		{
-			for(int i = 0;i < users.size(); i++)
-			{
-
-			   if((users.get(i)).getUserID() == user.getUserID())
-			   {
+		else{
+			for(int i = 0;i < users.size(); i++){
+			   if((users.get(i)).getUserID() == user.getUserID()){
 					userExists = true;
 					System.out.println("--------------------------------------------");
 					System.out.println("User is registered in the database");
 					System.out.println("--------------------------------------------\n");
 			   }
-			   
-			   else
-			   {
+			   else{
 			   		System.out.println("--------------------------------------------");
 					System.out.println("User has been added to the database");
 					System.out.println("--------------------------------------------\n");
@@ -249,40 +209,32 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 			   } 
 			}
 		}
-		
+
 		return userExists;
     }
 	/**
 	* Generates a signiture for a users challenge
 	* @params userCheck user that generates the signiture
 	*/	
-	public void genSig(auctionClient userCheck) throws java.rmi.RemoteException
-	{
-		try
-		{
+	public void genSig(auctionClient userCheck) throws java.rmi.RemoteException{
+		try{
 			File challenge = (userCheck.getChallenge()).getChallengeFile();
-			
-			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN"); 
-			
+			Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
 			dsa.initSign(privKey);
-			
 			FileInputStream fis = new FileInputStream(challenge);
 			BufferedInputStream bufin = new BufferedInputStream(fis);
 			byte[] buffer = new byte[1024];
 			int len;
+
 			while ((len = bufin.read(buffer)) >= 0) {
 				dsa.update(buffer, 0, len);
 			};
+
 			bufin.close();
-			
 			byte[] realSig = dsa.sign();
-
 			serverResponse = new response(realSig);
-
 		}
-		
-		catch(Exception e)
-		{
+		catch(Exception e){
 			System.out.println("Could not respond to the challenge");
 		}	
 	}
@@ -292,12 +244,10 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	* @params user that is being vetted 
 	* @return verifies returns true if the signiture maches 
 	*/	
-	public boolean verSig(auctionClient user) throws java.rmi.RemoteException
-	{
+	public boolean verSig(auctionClient user) throws java.rmi.RemoteException{
 		boolean verifies = false;
 		
-		try
-		{
+		try{
 			//Writes the server signed file onto local area of client
 			byte[] userResponse = ((user.getResponse()).getResponseFile());
 			FileOutputStream responsefos = new FileOutputStream("userResponse");
@@ -340,17 +290,16 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
             byte[] buffer = new byte[1024];
             int len;
 			
-            while (bufin.available() != 0) {
+            while (bufin.available() != 0){
                 len = bufin.read(buffer);
                 sig.update(buffer, 0, len);
-                };
+            };
  
             bufin.close();
  
             verifies = sig.verify(sigToVerify);	
 		}
-		catch(Exception e)
-		{
+		catch(Exception e){
 			
 		}
 		
@@ -360,24 +309,21 @@ public class auctionImplementation extends java.rmi.server.UnicastRemoteObject i
 	* gets the public key of the server
 	* @return pubKey  
 	*/
-	public PublicKey getPublicKey() throws java.rmi.RemoteException
-	{
+	public PublicKey getPublicKey() throws java.rmi.RemoteException{
 		return pubKey;
 	}
 	/**
 	* gets the servers challenge
 	* @return serverChallenge
 	*/
-	public challenge getChallenge() throws java.rmi.RemoteException
-	{
+	public challenge getChallenge() throws java.rmi.RemoteException{
 		return serverChallenge;
 	}
 	/**
 	* gets the servers response to a challenge
 	* @return serverResponse 
 	*/
-	public response getResponse() throws java.rmi.RemoteException
-	{
+	public response getResponse() throws java.rmi.RemoteException{
 		return serverResponse;
 	}
 }
